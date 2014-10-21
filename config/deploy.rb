@@ -24,6 +24,17 @@ set :deploy_to, '/home/deploy/new_relic'
 
 # Default value for :linked_files is []
 set :linked_files, %w{config/database.yml}
+desc "Database config"
+  task :setup_config, roles: :app do
+  # upload you database.yml from config dir to shared dir on server
+  put File.read("config/database.yml"), "#{shared_path}/config/database.yml"
+  # make symlink
+  run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+  # upload you database.yml from config dir to shared dir on server
+  put File.read(".env"), "#{shared_path}/config/.env"
+  # make symlink
+  run "ln -nfs #{shared_path}/config/.env #{current_path}/.env"
+end
 
 # Default value for linked_dirs is []
 set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system}
